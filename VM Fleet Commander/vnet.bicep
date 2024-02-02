@@ -15,6 +15,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
         name: 'Subnet-1'
         properties: {
           addressPrefix: '10.0.0.0/24'
+          networkSecurityGroup: {
+            id: networkSecurityGroup.id
+          }
         }
       }
       {
@@ -46,3 +49,27 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2020-11-01' = {
 }
 
 output networkInterfaceId string = networkInterface.id
+
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-01' = {
+  name: 'nsg-vm'
+  location: resourceGroupLocation
+  properties: {
+    securityRules: [
+      {
+        name: 'nsgRule'
+        properties: {
+          description: 'description'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Inbound'
+        }
+      }
+    ]
+  }
+}
+
